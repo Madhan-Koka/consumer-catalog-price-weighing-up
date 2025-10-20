@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-lg" style="border-radius: 15px; margin-top: 50px;">
+      <div class="card-body p-5">
+        <h2 class="text-center mb-4" style="color: #4A90E2; font-weight: bold;">Login</h2>
+        <p class="text-center text-muted mb-4">Welcome back! Please login to your account</p>
+        
+        {% if form.errors %}
+          <div class="alert alert-danger">
+            Invalid email or password. Please try again.
+          </div>
+        {% endif %}
+        
+        <form method="post">
+          {% csrf_token %}
+          
+          <!-- Email/Username Field -->
+          <div class="form-group mb-3">
+            <label for="id_username" class="form-label"><strong>Email:</strong></label>
+            <input type="text" name="username" class="form-control" id="id_username" placeholder="Enter your email" required autofocus>
+          </div>
+          
+          <!-- Password Field -->
+          <div class="form-group mb-4">
+            <label for="id_password" class="form-label"><strong>Password:</strong></label>
+            <input type="password" name="password" class="form-control" id="id_password" placeholder="Enter password" required>
+          </div>
+          
+          <!-- Login Button -->
+          <button type="submit" class="btn btn-success btn-block btn-lg" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; border-radius: 25px;">
+            Login
+          </button>
+        </form>
+        
+        <hr class="my-4">
+        
+        <p class="text-center mb-0">
+          Don't have an account? <a href="{% url 'register' %}" style="color: #11998e; font-weight: bold;">Register here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .form-control {
+    border-radius: 10px;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    transition: all 0.3s;
+  }
+  
+  .form-control:focus {
+    border-color: #11998e;
+    box-shadow: 0 0 0 0.2rem rgba(17, 153, 142, 0.25);
+  }
+  
+  .form-label {
+    color: #333;
+    font-size: 14px;
+  }
+  
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+  }
+</style>
+{% endblock %}

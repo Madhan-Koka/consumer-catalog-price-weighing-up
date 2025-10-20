@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Search Results for "{{ search_query }}"</h1>
+
+<div class="mb-3">
+    <a href="{% url 'home' %}" class="btn btn-secondary">← Back to Home</a>
+</div>
+
+<form class="form-inline mb-3" method="get" action="{% url 'home' %}">
+  <input type="text" class="form-control mr-2" name="q" placeholder="Search product..." value="{{ search_query }}">
+  <button type="submit" class="btn btn-info">Search Again</button>
+</form>
+
+{% if products %}
+<div class="alert alert-info">
+    Found {{ products|length }} results sorted by price (low to high)
+</div>
+
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name|truncatechars:60 }}</h5>
+                <p class="card-text">
+                    <span class="badge badge-primary">{{ product.site }}</span><br>
+                    <strong class="text-success">₹{{ product.price|floatformat:0 }}</strong>
+                </p>
+                <a href="{{ product.url }}" target="_blank" class="btn btn-primary btn-sm">View Product</a>
+                <button class="btn btn-success btn-sm save-btn" 
+                        data-name="{{ product.name }}" 
+                        data-url="{{ product.url }}" 
+                        data-site="{{ product.site }}" 
+                        data-price="{{ product.price }}"
+                        onclick="saveProduct(this)">
+                    💾 Save
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function saveProduct(button) {
+    const name = button.getAttribute('data-name');
+    const url = button.getAttribute('data-url');
+    const site = button.getAttribute('data-site');
+    const price = parseFloat(button.getAttribute('data-price'));
+    
+    // Disable button and show loading
+    button.disabled = true;
+    button.innerHTML = '⏳ Saving...';
+    
+    fetch('{% url "save_product" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            name: name,
+            url: url,
+            site: site,
+            price: price
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            button.innerHTML = '✓ Saved';
+            button.classList.remove('btn-success');
+            button.classList.add('btn-secondary');
+            alert(data.message);
+        } else {
+            button.disabled = false;
+            button.innerHTML = '💾 Save';
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        button.disabled = false;
+        button.innerHTML = '💾 Save';
+        alert('Failed to save product. Please try again.');
+        console.error('Error:', error);
+    });
+}
+</script>
+
+{% else %}
+<div class="alert alert-warning">
+    No products found for "{{ search_query }}". Try a different search term.
+</div>
+{% endif %}
+
+{% endblock %}

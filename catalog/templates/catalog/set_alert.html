@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Set Price Alert for {{ product.name }}</h2>
+<form method="post">
+  {% csrf_token %}
+  <input type="number" step="0.01" name="target_price" placeholder="Alert me when price drops below:" required>
+  <button type="submit" class="btn btn-warning">Set Alert</button>
+</form>
+{% endblock %}
